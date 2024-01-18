@@ -2,6 +2,7 @@ const ModeloUsuario = require("../models/usuarios");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require('multer')
 const getAllUsers = async (req, res) => {
   try {
     const getUsers = await ModeloUsuario.find();
@@ -105,6 +106,14 @@ const loginUser = async (req, res) => {
   }
 };
 
+const subirImagen = async(req, res) => {
+  try {
+    res.status(200).json({msg:'Imagen cargada'})
+  } catch (error) {
+    res.status(500).json({msg: "No se pudo cargar la imagen"})
+  }
+}
+
 module.exports = {
   getAllUsers,
   getOneUser,
@@ -112,4 +121,5 @@ module.exports = {
   editUser,
   deleteUser,
   loginUser,
+  subirImagen
 };
