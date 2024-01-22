@@ -14,11 +14,11 @@ class Server {
         this.app.use(cors())
     }
     routes(){
-        this.app.use('/user', require('../Routes/usuarios.route'))
+        this.app.use('/user', require('../routes/usuarios.routes'))
     }
     listen(){
         this.app.listen(process.env.PORT, () => {
-            console.log('Server en linea')
+            console.log('Servidor en linea')
         })
     }
 }
