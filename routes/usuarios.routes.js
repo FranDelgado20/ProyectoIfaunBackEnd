@@ -6,10 +6,11 @@ const {
   createUser,
   editUser,
   deleteUser,
-  subirImagen,
+  actualizarImgUsuario,
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const { upload } = require("../middleware/storage");
+const multer = require("../utils/multer");
 const router = express.Router();
 
 router.get("/", getAllUsers);
@@ -28,10 +29,19 @@ router.post(
   ],
   createUser
 );
-router.post("/upload", upload.single("file"), subirImagen);
+router.put(
+  "/upload/:id",
+  [
+    check("img", "El campo de imagen está vacío").notEmpty(),
+    check("id", "Formato de ID inválido").isMongoId(),
+  ],
+  multer.single("file"),
+  actualizarImgUsuario
+);
 router.put(
   "/:id",
   [check("id", "Formato de ID inválido").isMongoId()],
+  upload.single("file"),
   editUser
 );
 router.delete(

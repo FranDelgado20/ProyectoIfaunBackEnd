@@ -2,21 +2,21 @@ const ModeloUsuario = require("../models/usuarios");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const multer = require('multer')
+const cloudinary = require("../utils/cloudinaryConfig");
 const getAllUsers = async (req, res) => {
   try {
-    const getUsers = await ModeloUsuario.find();
+    const allUsers = await ModeloUsuario.find();
     res
       .status(200)
-      .json({ msg: "Usuarios encontrados correctamente", getUsers });
+      .json({ msg: "Usuarios encontrados correctamente", allUsers });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo encontrar a los usuarios", error });
   }
 };
 const getOneUser = async (req, res) => {
   try {
-    const getUser = await ModeloUsuario.findOne({ _id: req.params.id });
-    res.status(200).json({ msg: "Se encontro el usuario", getUser });
+    const oneUser = await ModeloUsuario.findOne({ _id: req.params.id });
+    res.status(200).json({ msg: "Se encontro el usuario", oneUser });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo encontrar el usuario", error });
   }
@@ -26,7 +26,6 @@ const createUser = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ msg: errors.array() });
   }
-
   try {
     const userExist = await ModeloUsuario.findOne({ email: req.body.email });
     if (userExist) {
@@ -106,13 +105,25 @@ const loginUser = async (req, res) => {
   }
 };
 
-const subirImagen = async(req, res) => {
+const actualizarImgUsuario = async (req, res) => {
   try {
-    res.status(200).json({msg:'Imagen cargada'})
+    const results = await cloudinary.uploader.upload(req.file.path);
+    const img = results.secure_url;
+    const updatedUser = await ModeloUsuario.findByIdAndUpdate(
+      { _id: req.params.id },
+      { img },
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({
+        msg: "Imagen de usuario actualizada correctamente",
+        updatedUser,
+      });
   } catch (error) {
-    res.status(500).json({msg: "No se pudo cargar la imagen"})
+    res.status(500).json({ msg: "No se pudo cargar la imagen" });
   }
-}
+};
 
 module.exports = {
   getAllUsers,
@@ -121,5 +132,5 @@ module.exports = {
   editUser,
   deleteUser,
   loginUser,
-  subirImagen
+  actualizarImgUsuario,
 };

@@ -18,9 +18,9 @@ const UserSchema = new mongoose.Schema({
         type:String,
         default:'user'
     },
-    imagenes:{
+    img:{
         type:String,
-        
+        default: "http://imgfz.com/i/aeJy0Hm.png"
     }
 })
 
