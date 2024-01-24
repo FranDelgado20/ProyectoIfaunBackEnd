@@ -17,6 +17,7 @@ class Server {
     }
     routes(){
         this.app.use('/user', require('../routes/usuarios.routes'))
+        this.app.use('/comentarios', require('../routes/comentario.routes'))
     }
     listen(){
         this.app.listen(process.env.PORT, () => {
