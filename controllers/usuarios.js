@@ -119,7 +119,7 @@ const actualizarImgUsuario = async (req, res) => {
       updatedUser,
     });
   } catch (error) {
-    res.status(500).json({ msg: "No se pudo cargar la imagen" });
+    res.status(500).json({ msg: "No se pudo actualizar la imagen" });
   }
 };
 
