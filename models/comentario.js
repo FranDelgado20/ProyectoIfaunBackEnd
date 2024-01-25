@@ -1,9 +1,13 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const comentarioSchema = new mongoose.Schema({
   nombreUsuario: {
     type: String,
     required: true,
+  },
+  fotoDePerfil: {
+    type: String,
+    required: true
   },
   fecha: {
     type: String,
@@ -17,10 +21,10 @@ const comentarioSchema = new mongoose.Schema({
   },
   mostrar: {
     type: String,
-    default:"No"
+    default: "No",
   },
 });
 
 const Comentario = mongoose.model("comentario", comentarioSchema);
 
-module.exports = Comentario
+module.exports = Comentario;
