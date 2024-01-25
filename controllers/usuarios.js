@@ -65,12 +65,10 @@ const deleteUser = async (req, res) => {
     return res.status(422).json({ msg: errors.array() });
   }
   try {
-    const removeUser = await ModeloUsuario.findByIdAndDelete({
+    await ModeloUsuario.findByIdAndDelete({
       _id: req.params.id,
     });
-    res
-      .status(200)
-      .json({ msg: "Usuario eliminado correctamente", removeUser });
+    res.status(200).json({ msg: "Usuario eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo eliminar el usuario", error });
   }
@@ -96,12 +94,14 @@ const loginUser = async (req, res) => {
       };
       const token = jwt.sign(payload_jwt, process.env.SECRET_KEY);
 
-      res.status(200).json({ msg: "Usuario logueado", userExist, token });
+      res
+        .status(200)
+        .json({ msg: "Sesión iniciada correctamente", userExist, token });
     } else {
-      res.status(400).json({ msg: "Usuario y/o contraseña incorrecta" });
+      res.status(400).json({ msg: "Usuario y/o contraseña incorrectos" });
     }
   } catch (error) {
-    res.status(500).json({ msg: "No se pudo loguear el usuario", error });
+    res.status(500).json({ msg: "No se pudo iniciar sesión", error });
   }
 };
 
@@ -114,14 +114,12 @@ const actualizarImgUsuario = async (req, res) => {
       { img },
       { new: true }
     );
-    res
-      .status(200)
-      .json({
-        msg: "Imagen de usuario actualizada correctamente",
-        updatedUser,
-      });
+    res.status(200).json({
+      msg: "Imagen de usuario actualizada correctamente",
+      updatedUser,
+    });
   } catch (error) {
-    res.status(500).json({ msg: "No se pudo cargar la imagen" });
+    res.status(500).json({ msg: "No se pudo actualizar la imagen" });
   }
 };
 
