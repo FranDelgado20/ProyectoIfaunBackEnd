@@ -6,6 +6,7 @@ const {
   obtenerComentario,
   activarComentario,
   borrarComentario,
+  listarComentariosMostrables,
 } = require("../controllers/comentario.controller");
 const router = express.Router();
 const { check } = require("express-validator");
@@ -13,7 +14,8 @@ const { check } = require("express-validator");
 router
   .route("/")
   .get(listarTodosComentarios)
-  .post([
+  .post(
+    [
       check("nombreUsuario")
         .notEmpty()
         .withMessage("El nombre del usuario es un dato obligatorio")
@@ -42,10 +44,13 @@ router
   );
 
 router
+.route("/mostrables")
+.get(listarComentariosMostrables);
+
+router
   .route("/:id")
   .get(obtenerComentario)
   .put(activarComentario)
   .delete(borrarComentario);
 
 module.exports = router;
-
