@@ -7,6 +7,7 @@ const {
   editUser,
   deleteUser,
   actualizarImgUsuario,
+  loginUser,
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const { upload } = require("../middleware/storage");
@@ -28,6 +29,14 @@ router.post(
     check("pass", "El campo contraseña está vacio").notEmpty(),
   ],
   createUser
+);
+router.post(
+  "/login",
+  [
+    check("email", "El campo correo electrónico está vacío"),
+    check("pass", "El campo contraseña está vacío"),
+  ],
+  loginUser
 );
 router.put(
   "/upload/:id",
