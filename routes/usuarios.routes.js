@@ -8,14 +8,13 @@ const {
   deleteUser,
   actualizarImgUsuario,
   loginUser,
- 
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
-const { upload } = require("../middleware/storage");
 const multer = require("../utils/multer");
+const auth = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/", getAllUsers);
+router.get("/", auth("admin"), getAllUsers);
 router.get(
   "/:id",
   [check("id", "Formato de ID inválido").isMongoId()],
@@ -41,6 +40,7 @@ router.post(
 );
 router.put(
   "/upload/:id",
+  auth("user"),
   [
     check("img", "El campo de imagen está vacío").notEmpty(),
     check("id", "Formato de ID inválido").isMongoId(),
@@ -50,13 +50,14 @@ router.put(
 );
 router.put(
   "/:id",
+  auth(["user", "admin"]),
   [check("id", "Formato de ID inválido").isMongoId()],
-  
   editUser
 );
 
 router.delete(
   "/:id",
+  auth("admin"),
   [check("id", "Formato de ID inválido").isMongoId()],
   deleteUser
 );

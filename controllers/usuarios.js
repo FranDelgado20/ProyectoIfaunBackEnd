@@ -8,7 +8,11 @@ const getAllUsers = async (req, res) => {
     const allUsers = await ModeloUsuario.find();
     res
       .status(200)
-      .json({ msg: "Usuarios encontrados correctamente", allUsers });
+      .json({
+        msg: "Usuarios encontrados correctamente",
+        allUsers,
+        status: 200,
+      });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo encontrar a los usuarios", error });
   }
@@ -16,7 +20,9 @@ const getAllUsers = async (req, res) => {
 const getOneUser = async (req, res) => {
   try {
     const oneUser = await ModeloUsuario.findOne({ _id: req.params.id });
-    res.status(200).json({ msg: "Se encontro el usuario", oneUser });
+    res
+      .status(200)
+      .json({ msg: "Se encontro el usuario", oneUser, status: 200 });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo encontrar el usuario", error });
   }
@@ -53,7 +59,11 @@ const editUser = async (req, res) => {
     );
     res
       .status(200)
-      .json({ msg: "Se editó correctamente el usuario", updateUser });
+      .json({
+        msg: "Se editó correctamente el usuario",
+        updateUser,
+        status: 200,
+      });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo editar el usuario", error });
   }
@@ -68,7 +78,9 @@ const deleteUser = async (req, res) => {
     await ModeloUsuario.findByIdAndDelete({
       _id: req.params.id,
     });
-    res.status(200).json({ msg: "Usuario eliminado correctamente" });
+    res
+      .status(200)
+      .json({ msg: "Usuario eliminado correctamente", status: 200 });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo eliminar el usuario", error });
   }
@@ -117,6 +129,7 @@ const actualizarImgUsuario = async (req, res) => {
     res.status(200).json({
       msg: "Imagen de usuario actualizada correctamente",
       updatedUser,
+      status: 200,
     });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo actualizar la imagen" });
@@ -131,5 +144,4 @@ module.exports = {
   deleteUser,
   loginUser,
   actualizarImgUsuario,
-  
 };

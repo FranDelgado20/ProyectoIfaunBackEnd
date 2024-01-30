@@ -7,9 +7,11 @@ const {
   activarComentario,
   borrarComentario,
   listarComentariosMostrables,
+  permaBorrarComentario,
 } = require("../controllers/comentario.controller");
 const router = express.Router();
 const { check } = require("express-validator");
+const auth = require("../middleware/auth");
 
 router
   .route("/")
@@ -19,10 +21,6 @@ router
       check("nombreUsuario")
         .notEmpty()
         .withMessage("El nombre del usuario es un dato obligatorio"),
-      // .isLength({ min: 6 })
-      // .withMessage(
-      //   "El nombre del producto debe contener como minimo 6 caracteres"
-      // )
       check("fotoDePerfil")
         .notEmpty()
         .withMessage("La foto de perfil del usuario es un dato obligatorio"),
@@ -36,17 +34,14 @@ router
         .withMessage("La fecha es un dato obligatorio")
         .isLength({ min: 1 })
         .withMessage("La fecha debe contener como minimo 1 caracter"),
-      // check("mostrar")
-      //   .notEmpty()
-      //   .withMessage("Mostrar es un dato obligatorio")
-      //   .isIn(["Si", "No"])
-      //   .withMessage("Mostrar debe ser correcta"),
       validarCampos,
     ],
     crearComentario
   );
 
 router.route("/mostrables").get(listarComentariosMostrables);
+
+router.delete("/perma-delete/:id", auth("admin"), permaBorrarComentario)
 
 router
   .route("/:id")
