@@ -42,14 +42,13 @@ const activarComentario = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // activar comentario
     const query = { mostrar: "Si" };
     const comentarioActivado = await Comentario.findByIdAndUpdate(id, query, {
       new: true,
     });
 
     res.status(200).json({
-      msg: "Comentario activado de la bd",
+      msg: "Comentario activado de la base de datos",
       comentarioActivado,
     });
   } catch (error) {
@@ -61,18 +60,28 @@ const borrarComentario = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // no mostrar comentario
     const query = { mostrar: "No" };
     const comentarioBorrado = await Comentario.findByIdAndUpdate(id, query, {
       new: true,
     });
 
     res.status(200).json({
-      msg: "Comentario desactivado de la bd",
+      msg: "Comentario desactivado de la base de datos",
       comentarioBorrado,
     });
   } catch (error) {
     console.error;
+  }
+};
+
+const permaBorrarComentario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Comentario.findByIdAndDelete({ _id: id });
+    res.status(200).json({ msg: "Comentario eliminado correctamente", status: 200 });
+  } catch (error) {
+    res.status(500).json({ msg: "No se pudo eliminar el comentario", error });
   }
 };
 
@@ -97,4 +106,5 @@ module.exports = {
   activarComentario,
   borrarComentario,
   listarComentariosMostrables,
+  permaBorrarComentario,
 };
