@@ -8,6 +8,7 @@ const {
   deleteUser,
   actualizarImgUsuario,
   loginUser,
+ 
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const { upload } = require("../middleware/storage");
@@ -50,9 +51,10 @@ router.put(
 router.put(
   "/:id",
   [check("id", "Formato de ID inválido").isMongoId()],
-  upload.single("file"),
+  
   editUser
 );
+
 router.delete(
   "/:id",
   [check("id", "Formato de ID inválido").isMongoId()],

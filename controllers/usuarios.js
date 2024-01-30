@@ -131,4 +131,5 @@ module.exports = {
   deleteUser,
   loginUser,
   actualizarImgUsuario,
+  
 };
