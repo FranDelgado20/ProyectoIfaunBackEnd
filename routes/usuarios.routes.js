@@ -8,6 +8,7 @@ const {
   deleteUser,
   actualizarImgUsuario,
   loginUser,
+  editPass,
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const multer = require("../utils/multer");
@@ -47,6 +48,15 @@ router.put(
   ],
   multer.single("file"),
   actualizarImgUsuario
+);
+router.put(
+  "/editPass/:id",
+  auth('user'),
+  check("id", "Formato de ID inválido").isMongoId(),
+  check("pass", "El campo nueva contraseña está vacío"),
+  check("actualPass", "El campo contraseña actual está vacío"),
+
+  editPass
 );
 router.put(
   "/:id",

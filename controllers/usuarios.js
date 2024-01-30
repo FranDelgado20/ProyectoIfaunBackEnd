@@ -6,13 +6,11 @@ const cloudinary = require("../utils/cloudinaryConfig");
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await ModeloUsuario.find();
-    res
-      .status(200)
-      .json({
-        msg: "Usuarios encontrados correctamente",
-        allUsers,
-        status: 200,
-      });
+    res.status(200).json({
+      msg: "Usuarios encontrados correctamente",
+      allUsers,
+      status: 200,
+    });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo encontrar a los usuarios", error });
   }
@@ -57,13 +55,11 @@ const editUser = async (req, res) => {
       req.body,
       { new: true }
     );
-    res
-      .status(200)
-      .json({
-        msg: "Se editó correctamente el usuario",
-        updateUser,
-        status: 200,
-      });
+    res.status(200).json({
+      msg: "Se editó correctamente el usuario",
+      updateUser,
+      status: 200,
+    });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo editar el usuario", error });
   }
@@ -135,6 +131,33 @@ const actualizarImgUsuario = async (req, res) => {
     res.status(500).json({ msg: "No se pudo actualizar la imagen" });
   }
 };
+const editPass = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ msg: errors.array() });
+  }
+  try {
+    const user = await ModeloUsuario.findOne({ _id: req.params.id });
+    if (!user) {
+      return res.status(422).json({ msg: "El usuario no existe" });
+    }
+    const passCheck = await bcrypt.compare(req.body.actualPass, user.pass);
+    const salt = await bcrypt.genSaltSync();
+
+    if (!passCheck) {
+      return res
+        .status(401)
+        .json({ msg: "Las contraseñas nueva y actual no coinciden" });
+    }
+    user.pass = await bcrypt.hash(req.body.pass, salt);
+    await user.save();
+    res
+      .status(200)
+      .json({ msg: "Contrasña modificada con éxito", status: 200 });
+  } catch (error) {
+    res.status(500).json({ msg: "No se pudo actualizar la contraseña" });
+  }
+};
 
 module.exports = {
   getAllUsers,
@@ -144,4 +167,5 @@ module.exports = {
   deleteUser,
   loginUser,
   actualizarImgUsuario,
+  editPass,
 };
