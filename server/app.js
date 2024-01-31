@@ -1,7 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-
 class Server {
     constructor(){
         this.app = express()
