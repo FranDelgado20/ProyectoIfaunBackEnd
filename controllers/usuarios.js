@@ -120,9 +120,12 @@ const actualizarImgUsuario = async (req, res) => {
     const user = await ModeloUsuario.findOne({ _id: req.params.id });
     if (!user) return res.status(422).json({ msg: "El usuario no existe" });
 
-    const oldImg = (user.img).split("/")[7].split(".")[0];
-    
-    await cloudinary.uploader.destroy(oldImg);
+    console.log(user.img);
+    if (user.img !== "http://imgfz.com/i/SjUn0zM.png") {
+      const oldImg = user.img.split("/")[7].split(".")[0];
+      await cloudinary.uploader.destroy(oldImg);
+    }
+
     const resizedImage = await helperImg(
       req.file.path,
       `resized-${req.file.filename}`
@@ -137,6 +140,7 @@ const actualizarImgUsuario = async (req, res) => {
       .status(200)
       .json({ msg: "Imagen actualizada correctamente", user, status: 200 });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error al subir la imagen", error });
   }
 };

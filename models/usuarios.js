@@ -20,7 +20,11 @@ const UserSchema = new mongoose.Schema({
     },
     img:{
         type:String,
-        default: "http://imgfz.com/i/aeJy0Hm.png"
+        default: "http://imgfz.com/i/SjUn0zM.png"
+    },
+    estadoCuenta:{
+        type:Boolean,
+        default:false
     }
 })
 
