@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("../utils/cloudinaryConfig");
 const helperImg = require("../utils/sharpImage");
-
+const fs = require('fs')
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await ModeloUsuario.find();
@@ -134,8 +134,11 @@ const actualizarImgUsuario = async (req, res) => {
     const results = await cloudinary.uploader.upload(resizedImage);
 
     user.img = results.secure_url;
+    console.log(resizedImage)
     await user.save();
-
+    
+    fs.unlinkSync(req.file.path);
+    fs.unlinkSync(resizedImage);
     res
       .status(200)
       .json({ msg: "Imagen actualizada correctamente", user, status: 200 });
