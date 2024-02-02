@@ -12,7 +12,7 @@ const {
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const auth = require("../middleware/auth");
-const { upload } = require("../middleware/storage");
+const { upload } = require("../utils/multer");
 const router = express.Router();
 router.get("/", auth("admin"), getAllUsers);
 router.get(

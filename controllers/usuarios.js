@@ -3,8 +3,9 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("../utils/cloudinaryConfig");
-const helperImg = require("../utils/sharpImage");
-const fs = require('fs')
+const streamifier = require("streamifier");
+const sharp = require("sharp");
+
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await ModeloUsuario.find();
@@ -116,35 +117,48 @@ const loginUser = async (req, res) => {
 };
 
 const actualizarImgUsuario = async (req, res) => {
+  let procesandoImagen = false;
   try {
+    if (procesandoImagen) {
+      return res.status(400).json({ msg: "La imagen ya se está procesando" });
+    }
+
+    procesandoImagen = true;
     const user = await ModeloUsuario.findOne({ _id: req.params.id });
     if (!user) return res.status(422).json({ msg: "El usuario no existe" });
 
-    console.log(user.img);
     if (user.img !== "http://imgfz.com/i/SjUn0zM.png") {
       const oldImg = user.img.split("/")[7].split(".")[0];
       await cloudinary.uploader.destroy(oldImg);
     }
 
-    const resizedImage = await helperImg(
-      req.file.path,
-      `resized-${req.file.filename}`
+    const processedImageBuffer = await sharp(req.file.buffer)
+      .resize(350, 350)
+      .toBuffer();
+
+    let cloud = cloudinary.uploader.upload_stream(
+      {
+        format: "png",
+      },
+      async function (error, result) {
+        if (error) console.log(error);
+        else {
+          user.img = result.secure_url;
+          await user.save();
+          res
+            .status(200)
+            .json({
+              msg: "Imagen actualizada correctamente",
+              user,
+              status: 200,
+            });
+        }
+      }
     );
-
-    const results = await cloudinary.uploader.upload(resizedImage);
-
-    user.img = results.secure_url;
-    console.log(resizedImage)
-    await user.save();
-    
-    fs.unlinkSync(req.file.path);
-    fs.unlinkSync(resizedImage);
-    res
-      .status(200)
-      .json({ msg: "Imagen actualizada correctamente", user, status: 200 });
+    streamifier.createReadStream(processedImageBuffer).pipe(cloud);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error al subir la imagen", error });
+    res.status(500).json({ msg: "Error al subir la imagen", error });
   }
 };
 const editPass = async (req, res) => {
