@@ -3,6 +3,8 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("../utils/cloudinaryConfig");
+const helperImg = require("../utils/sharpImage");
+const fs = require('fs')
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await ModeloUsuario.find();
@@ -115,20 +117,34 @@ const loginUser = async (req, res) => {
 
 const actualizarImgUsuario = async (req, res) => {
   try {
-    const results = await cloudinary.uploader.upload(req.file.path);
-    const img = results.secure_url;
-    const updatedUser = await ModeloUsuario.findByIdAndUpdate(
-      { _id: req.params.id },
-      { img },
-      { new: true }
+    const user = await ModeloUsuario.findOne({ _id: req.params.id });
+    if (!user) return res.status(422).json({ msg: "El usuario no existe" });
+
+    console.log(user.img);
+    if (user.img !== "http://imgfz.com/i/SjUn0zM.png") {
+      const oldImg = user.img.split("/")[7].split(".")[0];
+      await cloudinary.uploader.destroy(oldImg);
+    }
+
+    const resizedImage = await helperImg(
+      req.file.path,
+      `resized-${req.file.filename}`
     );
-    res.status(200).json({
-      msg: "Imagen de usuario actualizada correctamente",
-      updatedUser,
-      status: 200,
-    });
+
+    const results = await cloudinary.uploader.upload(resizedImage);
+
+    user.img = results.secure_url;
+    console.log(resizedImage)
+    await user.save();
+    
+    fs.unlinkSync(req.file.path);
+    fs.unlinkSync(resizedImage);
+    res
+      .status(200)
+      .json({ msg: "Imagen actualizada correctamente", user, status: 200 });
   } catch (error) {
-    res.status(500).json({ msg: "No se pudo actualizar la imagen" });
+    console.log(error);
+    res.status(500).json({ message: "Error al subir la imagen", error });
   }
 };
 const editPass = async (req, res) => {

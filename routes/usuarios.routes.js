@@ -11,10 +11,9 @@ const {
   editPass,
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
-const multer = require("../utils/multer");
 const auth = require("../middleware/auth");
+const { upload } = require("../middleware/storage");
 const router = express.Router();
-
 router.get("/", auth("admin"), getAllUsers);
 router.get(
   "/:id",
@@ -41,17 +40,16 @@ router.post(
 );
 router.put(
   "/upload/:id",
-  auth("user"),
   [
     check("img", "El campo de imagen está vacío").notEmpty(),
     check("id", "Formato de ID inválido").isMongoId(),
   ],
-  multer.single("file"),
+  upload.single("file"),
   actualizarImgUsuario
 );
 router.put(
   "/editPass/:id",
-  auth('user'),
+  auth("user"),
   check("id", "Formato de ID inválido").isMongoId(),
   check("pass", "El campo nueva contraseña está vacío"),
   check("actualPass", "El campo contraseña actual está vacío"),
