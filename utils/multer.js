@@ -1,14 +1,19 @@
 const multer = require("multer");
-const path = require("path");
 
-module.exports = multer({
-  storage: multer.memoryStorage({}),
-  fileFilter: (req, file, cb) => {
-    let ext = path.extname(file.originalname);
-    if (ext !== ".jpg" && ext !== ".jpeg" && ext !== ".png") {
-      cb(new Error("El tipo de archivo es inválido"), false);
-      return;
-    }
+const storage = multer.memoryStorage();
+const fileFilter = (req, file, cb) => {
+  const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"];
+  
+  if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
-  },
-});
+  } else {
+    cb(new Error("El tipo de archivo es inválido"), false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
+
+module.exports = {
+  storage,
+  upload,
+};
