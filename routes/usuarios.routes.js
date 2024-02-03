@@ -1,5 +1,5 @@
 const express = require("express");
-
+const router = express.Router();
 const {
   getAllUsers,
   getOneUser,
@@ -13,10 +13,10 @@ const {
 const { check } = require("express-validator");
 const auth = require("../middleware/auth");
 const { upload } = require("../utils/multer");
-const router = express.Router();
+
 router.get("/", auth("admin"), getAllUsers);
 router.get(
-  "/:id",
+  "/:id", auth("user"),
   [check("id", "Formato de ID inválido").isMongoId()],
   getOneUser
 );
@@ -39,7 +39,7 @@ router.post(
   loginUser
 );
 router.put(
-  "/upload/:id",
+  "/upload/:id", auth("user"),
   [
     check("img", "El campo de imagen está vacío").notEmpty(),
     check("id", "Formato de ID inválido").isMongoId(),

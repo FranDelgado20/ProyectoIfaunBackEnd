@@ -5,9 +5,13 @@ const comentarioSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
   fotoDePerfil: {
     type: String,
-    required: true
+    required: true,
   },
   fecha: {
     type: String,
@@ -17,14 +21,17 @@ const comentarioSchema = new mongoose.Schema({
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 3000,
+    maxLength: 300,
   },
   mostrar: {
     type: String,
     default: "No",
   },
 });
-
+comentarioSchema.methods.toJSON = function () {
+  const { __v, ...comment } = this.toObject();
+  return comment;
+};
 const Comentario = mongoose.model("comentario", comentarioSchema);
 
 module.exports = Comentario;
