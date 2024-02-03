@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const cloudinary = require("../utils/cloudinaryConfig");
 const streamifier = require("streamifier");
 const sharp = require("sharp");
+const Comentario = require("../models/comentario");
 
 const getAllUsers = async (req, res) => {
   try {
@@ -125,7 +126,11 @@ const actualizarImgUsuario = async (req, res) => {
 
     procesandoImagen = true;
     const user = await ModeloUsuario.findOne({ _id: req.params.id });
+    const comment = await Comentario.findOne({ email: user.email });
+
     if (!user) return res.status(422).json({ msg: "El usuario no existe" });
+    if (!comment)
+      return res.status(422).json({ msg: "El comentario no existe" });
 
     if (user.img !== "http://imgfz.com/i/SjUn0zM.png") {
       const oldImg = user.img.split("/")[7].split(".")[0];
@@ -144,14 +149,14 @@ const actualizarImgUsuario = async (req, res) => {
         if (error) console.log(error);
         else {
           user.img = result.secure_url;
+          comment.fotoDePerfil = result.secure_url;
           await user.save();
-          res
-            .status(200)
-            .json({
-              msg: "Imagen actualizada correctamente",
-              user,
-              status: 200,
-            });
+          await comment.save();
+          res.status(200).json({
+            msg: "Imagen actualizada correctamente",
+            user,
+            status: 200,
+          });
         }
       }
     );
